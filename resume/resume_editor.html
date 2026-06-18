@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智能简历编辑器</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: "Microsoft YaHei", "PingFang SC", Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .toolbar {
+            background: rgba(255,255,255,0.95);
+            border-radius: 12px;
+            padding: 12px 20px;
+            margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            flex-wrap: wrap;
+        }
+        .toolbar button {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        .toolbar button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+        .toolbar button.secondary {
+            background: #f0f0f0;
+            color: #333;
+        }
+        .toolbar input {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            flex: 1;
+            min-width: 200px;
+        }
+        .resume {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+            overflow: hidden;
+            min-height: 1200px;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 60px;
+            text-align: center;
+            position: relative;
+        }
+        .header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 10%;
+            right: 10%;
+            height: 3px;
+            background: rgba(255,255,255,0.5);
+            border-radius: 2px;
+        }
+        .avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            cursor: pointer;
+            border: 3px solid rgba(255,255,255,0.5);
+            transition: all 0.3s;
+        }
+        .avatar:hover {
+            transform: scale(1.05);
+            border-color: white;
+        }
+        .header h1 {
+            font-size: 36px;
+            margin-bottom: 10px;
+            cursor: text;
+        }
+        .header h1[contenteditable="true"]:focus {
+            outline: 2px solid rgba(255,255,255,0.5);
+            border-radius: 4px;
+            padding: 2px 8px;
+        }
+        .header .title {
+            font-size: 18px;
+            opacity: 0.9;
+            margin-bottom: 20px;
+            cursor: text;
+        }
+        .contact-info {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+            font-size: 14px;
+            opacity: 0.8;
+        }
+        .contact-info div {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: text;
+        }
+        .contact-info div:hover {
+            opacity: 1;
+        }
+        .content {
+            padding: 40px 60px;
+        }
+        .section {
+            margin-bottom: 35px;
+        }
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        .section-header .icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+        .section-header h2 {
+            font-size: 20px;
+            color: #333;
+            font-weight: 600;
+        }
+        .section-header .add-btn {
+            margin-left: auto;
+            padding: 4px 12px;
+            background: #f0f0f0;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            color: #667eea;
+            transition: all 0.3s;
+        }
+        .section-header .add-btn:hover {
+            background: #667eea;
+            color: white;
+        }
+        .card {
+            background: #fafafa;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            transition: all 0.3s;
+            position: relative;
+        }
+        .card:hover {
+            background: #f5f5f5;
+            transform: translateX(5px);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        .card .delete-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 24px;
+            height: 24px;
+            border: none;
+            background: rgba(255,0,0,0.1);
+            border-radius: 50%;
+            color: #ff4444;
+            cursor: pointer;
+            font-size: 12px;
+            opacity: 0;
+            transition: all 0.3s;
+        }
+        .card:hover .delete-btn {
+            opacity: 1;
+        }
+        .card .delete-btn:hover {
+            background: rgba(255,0,0,0.2);
+        }
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 10px;
+        }
+        .card-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            cursor: text;
+            border-bottom: 1px dashed transparent;
+        }
+        .card-title:hover {
+            border-bottom-color: #667eea;
+        }
+        .card-company {
+            font-size: 14px;
+            color: #667eea;
+            font-weight: 500;
+            cursor: text;
+        }
+        .card-date {
+            font-size: 12px;
+            color: #999;
+            background: #f0f0f0;
+            padding: 4px 10px;
+            border-radius: 12px;
+            cursor: text;
+        }
+        .card-desc {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.8;
+            cursor: text;
+            margin-top: 8px;
+        }
+        .card-desc:empty::before {
+            content: '点击编辑描述...';
+            color: #ccc;
+        }
+        .skills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .skill-tag {
+            padding: 6px 16px;
+            background: linear-gradient(135deg, #e8f4fd 0%, #f0e8fd 100%);
+            border: 1px solid #d0e7ff;
+            border-radius: 20px;
+            font-size: 13px;
+            color: #667eea;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+        .skill-tag:hover {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: transparent;
+        }
+        .skill-tag .remove {
+            display: none;
+            margin-left: 6px;
+        }
+        .skill-tag:hover .remove {
+            display: inline;
+        }
+        .input-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .input-row input, .input-row textarea {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+        }
+        .input-row textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        .modal.show {
+            display: flex;
+        }
+        .modal-content {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        .modal-content h3 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+        .modal-content button {
+            margin-top: 20px;
+            padding: 10px 30px;
+            border: none;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+        }
+        .modal-content button.cancel {
+            background: #f0f0f0;
+            color: #333;
+            margin-top: 10px;
+        }
+        [contenteditable="true"] {
+            outline: none;
+        }
+        [contenteditable="true"]:focus {
+            background: #fff3cd;
+            border-radius: 4px;
+            padding: 2px 4px;
+        }
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            .toolbar {
+                display: none;
+            }
+            .resume {
+                box-shadow: none;
+                border-radius: 0;
+            }
+            .card .delete-btn, .section-header .add-btn {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="toolbar">
+            <button onclick="addExperience()">+ 添加经历</button>
+            <button onclick="addProject()">+ 添加项目</button>
+            <button onclick="addSkill()">+ 添加技能</button>
+            <button onclick="addEducation()">+ 添加教育</button>
+            <button onclick="addAward()">+ 添加荣誉</button>
+            <button onclick="saveResume()" class="secondary">💾 保存</button>
+            <button onclick="exportPDF()" class="secondary">📄 导出PDF</button>
+            <button onclick="printResume()" class="secondary">🖨️ 打印</button>
+            <input type="text" id="searchInput" placeholder="搜索内容..." oninput="searchResume()">
+        </div>
+
+        <div class="resume" id="resume">
+            <div class="header">
+                <div class="avatar" onclick="changeAvatar()">👤</div>
+                <h1 contenteditable="true" id="name">张三</h1>
+                <div class="title" contenteditable="true" id="title">高级前端工程师</div>
+                <div class="contact-info">
+                    <div contenteditable="true" id="phone">📱 138-0000-0000</div>
+                    <div contenteditable="true" id="email">📧 zhangsan@email.com</div>
+                    <div contenteditable="true" id="location">📍 北京</div>
+                    <div contenteditable="true" id="github">🌐 github.com/zhangsan</div>
+                </div>
+            </div>
+
+            <div class="content">
+                <div class="section">
+                    <div class="section-header">
+                        <div class="icon">👋</div>
+                        <h2>个人简介</h2>
+                    </div>
+                    <div class="card">
+                        <div class="card-desc" contenteditable="true" id="summary">
+                            10年前端开发经验，精通Vue、React等主流框架，熟悉Node.js全栈开发。热爱技术，善于解决复杂问题，具有良好的团队协作能力和项目管理经验。
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-header">
+                        <div class="icon">💼</div>
+                        <h2>工作经历</h2>
+                        <button class="add-btn" onclick="addExperience()">+ 添加</button>
+                    </div>
+                    <div id="experience-list">
+                        <div class="card" data-type="experience">
+                            <button class="delete-btn" onclick="deleteCard(this)">×</button>
+                            <div class="card-header">
+                                <div>
+                                    <div class="card-title" contenteditable="true">高级前端工程师</div>
+                                    <div class="card-company" contenteditable="true">字节跳动</div>
+                                </div>
+                                <div class="card-date" contenteditable="true">2020 - 至今</div>
+                            </div>
+                            <div class="card-desc" contenteditable="true">负责抖音Web端核心功能开发，主导多个大型项目架构设计，优化首屏加载性能提升50%。</div>
+                        </div>
+                        <div class="card" data-type="experience">
+                            <button class="delete-btn" onclick="deleteCard(this)">×</button>
+                            <div class="card-header">
+                                <div>
+                                    <div class="card-title" contenteditable="true">前端工程师</div>
+                                    <div class="card-company" contenteditable="true">阿里巴巴</div>
+                                </div>
+                                <div class="card-date" contenteditable="true">2016 - 2020</div>
+                            </div>
+                            <div class="card-desc" contenteditable="true">参与淘宝首页改版项目，负责商品详情页组件开发，推动团队前端工程化建设。</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-header">
+                        <div class="icon">💻</div>
+                        <h2>项目经验</h2>
+                        <button class="add-btn" onclick="addProject()">+ 添加</button>
+                    </div>
+                    <div id="project-list">
+                        <div class="card" data-type="project">
+                            <button class="delete-btn" onclick="deleteCard(this)">×</button>
+                            <div class="card-header">
+                                <div>
+                                    <div class="card-title" contenteditable="true">企业级组件库</div>
+                                    <div class="card-company" contenteditable="true">开源项目</div>
+                                </div>
+                                <div class="card-date" contenteditable="true">2022</div>
+                            </div>
+                            <div class="card-desc" contenteditable="true">从零搭建企业级UI组件库，包含50+高质量组件，支持主题定制和国际化，GitHub Star 5k+。</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-header">
+                        <div class="icon">🎓</div>
+                        <h2>教育背景</h2>
+                        <button class="add-btn" onclick="addEducation()">+ 添加</button>
+                    </div>
+                    <div id="education-list">
+                        <div class="card" data-type="education">
+                            <button class="delete-btn" onclick="deleteCard(this)">×</button>
+                            <div class="card-header">
+                                <div>
+                                    <div class="card-title" contenteditable="true">计算机科学与技术</div>
+                                    <div class="card-company" contenteditable="true">清华大学</div>
+                                </div>
+                                <div class="card-date" contenteditable="true">2012 - 2016</div>
+                            </div>
+                            <div class="card-desc" contenteditable="true">本科，GPA 3.8/4.0，获得优秀毕业生称号。</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-header">
+                        <div class="icon">⚡</div>
+                        <h2>专业技能</h2>
+                        <button class="add-btn" onclick="addSkill()">+ 添加</button>
+                    </div>
+                    <div class="skills" id="skills-list">
+                        <span class="skill-tag" onclick="removeSkill(this)">Vue.js <span class="remove">×</span></span>
+                        <span class="skill-tag" onclick="removeSkill(this)">React <span class="remove">×</span></span>
+                        <span class="skill-tag" onclick="removeSkill(this)">TypeScript <span class="remove">×</span></span>
+                        <span class="skill-tag" onclick="removeSkill(this)">Node.js <span class="remove">×</span></span>
+                        <span class="skill-tag" onclick="removeSkill(this)">Webpack <span class="remove">×</span></span>
+                        <span class="skill-tag" onclick="removeSkill(this)">Docker <span class="remove">×</span></span>
+                        <span class="skill-tag" onclick="removeSkill(this)">Git <span class="remove">×</span></span>
+                        <span class="skill-tag" onclick="removeSkill(this)">CSS3 <span class="remove">×</span></span>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-header">
+                        <div class="icon">🏆</div>
+                        <h2>荣誉奖项</h2>
+                        <button class="add-btn" onclick="addAward()">+ 添加</button>
+                    </div>
+                    <div id="award-list">
+                        <div class="card" data-type="award">
+                            <button class="delete-btn" onclick="deleteCard(this)">×</button>
+                            <div class="card-header">
+                                <div>
+                                    <div class="card-title" contenteditable="true">技术创新奖</div>
+                                    <div class="card-company" contenteditable="true">字节跳动</div>
+                                </div>
+                                <div class="card-date" contenteditable="true">2023</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="modal">
+        <div class="modal-content">
+            <h3 id="modal-title">添加内容</h3>
+            <div id="modal-body"></div>
+            <button onclick="saveModal()">确认</button>
+            <button class="cancel" onclick="closeModal()">取消</button>
+        </div>
+    </div>
+
+    <script>
+        let currentModalType = '';
+        let currentModalTarget = null;
+
+        function changeAvatar() {
+            const emojis = ['👤', '👨‍💻', '👩‍💻', '👨‍🎓', '👩‍🎓', '💼', '🌟', '🚀'];
+            const avatar = document.querySelector('.avatar');
+            const current = avatar.textContent;
+            const index = emojis.indexOf(current);
+            avatar.textContent = emojis[(index + 1) % emojis.length];
+        }
+
+        function deleteCard(btn) {
+            btn.parentElement.remove();
+        }
+
+        function removeSkill(tag) {
+            tag.remove();
+        }
+
+        function openModal(title, type, target) {
+            currentModalType = type;
+            currentModalTarget = target;
+            document.getElementById('modal-title').textContent = title;
+            
+            let body = '';
+            if (type === 'experience' || type === 'project' || type === 'education') {
+                body = `
+                    <div class="input-row">
+                        <input type="text" id="input-title" placeholder="职位/项目名称">
+                        <input type="text" id="input-company" placeholder="公司/学校">
+                    </div>
+                    <div class="input-row">
+                        <input type="text" id="input-date" placeholder="时间">
+                    </div>
+                    <div class="input-row">
+                        <textarea id="input-desc" placeholder="描述"></textarea>
+                    </div>
+                `;
+            } else if (type === 'skill') {
+                body = `
+                    <div class="input-row">
+                        <input type="text" id="input-skill" placeholder="技能名称（多个用逗号分隔）">
+                    </div>
+                `;
+            } else if (type === 'award') {
+                body = `
+                    <div class="input-row">
+                        <input type="text" id="input-title" placeholder="奖项名称">
+                        <input type="text" id="input-company" placeholder="颁发机构">
+                    </div>
+                    <div class="input-row">
+                        <input type="text" id="input-date" placeholder="时间">
+                    </div>
+                `;
+            }
+            
+            document.getElementById('modal-body').innerHTML = body;
+            document.getElementById('modal').classList.add('show');
+        }
+
+        function closeModal() {
+            document.getElementById('modal').classList.remove('show');
+        }
+
+        function saveModal() {
+            const type = currentModalType;
+            
+            if (type === 'experience') {
+                const title = document.getElementById('input-title').value;
+                const company = document.getElementById('input-company').value;
+                const date = document.getElementById('input-date').value;
+                const desc = document.getElementById('input-desc').value;
+                
+                if (title) {
+                    addCard('experience-list', 'experience', title, company, date, desc);
+                }
+            } else if (type === 'project') {
+                const title = document.getElementById('input-title').value;
+                const company = document.getElementById('input-company').value;
+                const date = document.getElementById('input-date').value;
+                const desc = document.getElementById('input-desc').value;
+                
+                if (title) {
+                    addCard('project-list', 'project', title, company, date, desc);
+                }
+            } else if (type === 'education') {
+                const title = document.getElementById('input-title').value;
+                const company = document.getElementById('input-company').value;
+                const date = document.getElementById('input-date').value;
+                const desc = document.getElementById('input-desc').value;
+                
+                if (title) {
+                    addCard('education-list', 'education', title, company, date, desc);
+                }
+            } else if (type === 'skill') {
+                const skills = document.getElementById('input-skill').value.split(',').map(s => s.trim()).filter(s => s);
+                skills.forEach(skill => {
+                    addSkillTag(skill);
+                });
+            } else if (type === 'award') {
+                const title = document.getElementById('input-title').value;
+                const company = document.getElementById('input-company').value;
+                const date = document.getElementById('input-date').value;
+                
+                if (title) {
+                    addCard('award-list', 'award', title, company, date, '');
+                }
+            }
+            
+            closeModal();
+        }
+
+        function addCard(listId, type, title, company, date, desc) {
+            const list = document.getElementById(listId);
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.dataset.type = type;
+            card.innerHTML = `
+                <button class="delete-btn" onclick="deleteCard(this)">×</button>
+                <div class="card-header">
+                    <div>
+                        <div class="card-title" contenteditable="true">${title}</div>
+                        <div class="card-company" contenteditable="true">${company}</div>
+                    </div>
+                    <div class="card-date" contenteditable="true">${date}</div>
+                </div>
+                ${desc ? `<div class="card-desc" contenteditable="true">${desc}</div>` : ''}
+            `;
+            list.appendChild(card);
+        }
+
+        function addSkillTag(skill) {
+            const list = document.getElementById('skills-list');
+            const tag = document.createElement('span');
+            tag.className = 'skill-tag';
+            tag.textContent = skill;
+            tag.onclick = function() { this.remove(); };
+            tag.innerHTML = skill + ' <span class="remove">×</span>';
+            list.appendChild(tag);
+        }
+
+        function addExperience() {
+            openModal('添加工作经历', 'experience');
+        }
+
+        function addProject() {
+            openModal('添加项目经验', 'project');
+        }
+
+        function addEducation() {
+            openModal('添加教育背景', 'education');
+        }
+
+        function addSkill() {
+            openModal('添加技能', 'skill');
+        }
+
+        function addAward() {
+            openModal('添加荣誉奖项', 'award');
+        }
+
+        function searchResume() {
+            const keyword = document.getElementById('searchInput').value.toLowerCase();
+            const cards = document.querySelectorAll('.card');
+            
+            cards.forEach(card => {
+                const text = card.textContent.toLowerCase();
+                card.style.display = text.includes(keyword) ? '' : 'none';
+            });
+        }
+
+        function saveResume() {
+            const resumeData = {
+                name: document.getElementById('name').textContent,
+                title: document.getElementById('title').textContent,
+                phone: document.getElementById('phone').textContent,
+                email: document.getElementById('email').textContent,
+                location: document.getElementById('location').textContent,
+                github: document.getElementById('github').textContent,
+                summary: document.getElementById('summary').textContent,
+                experiences: Array.from(document.querySelectorAll('[data-type="experience"]')).map(card => ({
+                    title: card.querySelector('.card-title').textContent,
+                    company: card.querySelector('.card-company').textContent,
+                    date: card.querySelector('.card-date').textContent,
+                    desc: card.querySelector('.card-desc')?.textContent || ''
+                })),
+                projects: Array.from(document.querySelectorAll('[data-type="project"]')).map(card => ({
+                    title: card.querySelector('.card-title').textContent,
+                    company: card.querySelector('.card-company').textContent,
+                    date: card.querySelector('.card-date').textContent,
+                    desc: card.querySelector('.card-desc')?.textContent || ''
+                })),
+                education: Array.from(document.querySelectorAll('[data-type="education"]')).map(card => ({
+                    title: card.querySelector('.card-title').textContent,
+                    company: card.querySelector('.card-company').textContent,
+                    date: card.querySelector('.card-date').textContent,
+                    desc: card.querySelector('.card-desc')?.textContent || ''
+                })),
+                skills: Array.from(document.querySelectorAll('.skill-tag')).map(tag => tag.textContent.replace(' ×', '')),
+                awards: Array.from(document.querySelectorAll('[data-type="award"]')).map(card => ({
+                    title: card.querySelector('.card-title').textContent,
+                    company: card.querySelector('.card-company').textContent,
+                    date: card.querySelector('.card-date').textContent
+                }))
+            };
+            
+            const blob = new Blob([JSON.stringify(resumeData, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'resume.json';
+            a.click();
+            URL.revokeObjectURL(url);
+            
+            alert('简历已保存！');
+        }
+
+        function printResume() {
+            window.print();
+        }
+
+        function exportPDF() {
+            window.print();
+        }
+
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.modal') && !e.target.closest('.add-btn')) {
+                closeModal();
+            }
+        });
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeModal();
+            }
+        });
+    </script>
+</body>
+</html>

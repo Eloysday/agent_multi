@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>个人简历</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: "Microsoft YaHei", "PingFang SC", Arial, sans-serif;
+            background: #f5f5f5;
+            padding: 10px;
+            line-height: 1.4;
+        }
+        .page {
+            width: 210mm;
+            height: 297mm;
+            margin: 0 auto;
+            background: white;
+            padding: 15px 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #333;
+            padding-bottom: 10px;
+        }
+        .header h1 {
+            font-size: 22px;
+            margin-bottom: 5px;
+            color: #333;
+        }
+        .header .subtitle {
+            font-size: 13px;
+            color: #666;
+        }
+        .contact {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-top: 8px;
+            font-size: 11px;
+            color: #666;
+            flex-wrap: wrap;
+        }
+        .section {
+            margin-bottom: 12px;
+        }
+        .section-title {
+            font-size: 13px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 8px;
+            padding-bottom: 3px;
+            border-bottom: 1px solid #ddd;
+        }
+        .section-title::before {
+            content: "▶ ";
+            color: #667eea;
+        }
+        .item {
+            margin-bottom: 8px;
+        }
+        .item-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 3px;
+            align-items: center;
+        }
+        .item-title {
+            font-weight: bold;
+            color: #333;
+            font-size: 12px;
+        }
+        .item-date {
+            color: #666;
+            font-size: 11px;
+        }
+        .item-subtitle {
+            color: #667eea;
+            margin-bottom: 3px;
+            font-size: 11px;
+        }
+        .item-content {
+            color: #666;
+            font-size: 11px;
+            line-height: 1.5;
+        }
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 6px;
+        }
+        .skill-item {
+            background: #f8f8f8;
+            padding: 4px 8px;
+            border-radius: 3px;
+            font-size: 11px;
+            color: #333;
+            text-align: center;
+        }
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+        }
+        .info-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            white-space: nowrap;
+        }
+        .info-label {
+            font-weight: bold;
+            color: #333;
+            min-width: 45px;
+            font-size: 11px;
+        }
+        .info-value {
+            color: #666;
+            flex: 1;
+        }
+        .input-field {
+            border: none;
+            border-bottom: 1px dashed #ccc;
+            background: transparent;
+            font-family: inherit;
+            font-size: inherit;
+            color: inherit;
+            width: 100%;
+            padding: 1px 0;
+            outline: none;
+        }
+        .input-field:focus {
+            border-bottom-color: #667eea;
+        }
+        .input-field::placeholder {
+            color: #ccc;
+        }
+        .textarea-field {
+            border: none;
+            border-bottom: 1px dashed #ccc;
+            background: transparent;
+            font-family: inherit;
+            font-size: inherit;
+            color: inherit;
+            width: 100%;
+            padding: 1px 0;
+            outline: none;
+            resize: none;
+            min-height: 40px;
+            line-height: 1.4;
+        }
+        .textarea-field:focus {
+            border-bottom-color: #667eea;
+        }
+        @media print {
+            @page {
+                margin: 0;
+                padding: 0;
+                size: A4;
+            }
+            body {
+                background: white;
+                padding: 0;
+                margin: 0;
+            }
+            .page {
+                box-shadow: none;
+                padding: 15px 20px;
+                margin: 0;
+                width: 210mm;
+                height: 297mm;
+            }
+            .input-field, .textarea-field {
+                border-bottom: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="page">
+        <div class="header">
+            <h1><input type="text" class="input-field" placeholder="姓名" style="font-size: 22px; font-weight: bold; text-align: center; border: none;"></h1>
+            <div class="subtitle">
+                <input type="text" class="input-field" placeholder="求职意向 / 职位" style="font-size: 13px; text-align: center; border: none;">
+            </div>
+            <div class="contact">
+                <span>📱 <input type="text" class="input-field" placeholder="手机号码" style="width: 100px;"></span>
+                <span>📧 <input type="text" class="input-field" placeholder="邮箱地址" style="width: 160px;"></span>
+                <span>📍 <input type="text" class="input-field" placeholder="所在城市" style="width: 80px;"></span>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">个人简介</div>
+            <textarea class="textarea-field" placeholder="请输入个人简介..." style="min-height: 35px;"></textarea>
+        </div>
+
+        <div class="section">
+            <div class="section-title">基本信息</div>
+            <div class="info-grid">
+                <div class="info-item">
+                    <span class="info-label">性别：</span>
+                    <input type="text" class="input-field" placeholder="性别">
+                </div>
+                <div class="info-item">
+                    <span class="info-label">年龄：</span>
+                    <input type="text" class="input-field" placeholder="年龄">
+                </div>
+                <div class="info-item">
+                    <span class="info-label">学历：</span>
+                    <input type="text" class="input-field" placeholder="学历">
+                </div>
+                <div class="info-item">
+                    <span class="info-label">工作年限：</span>
+                    <input type="text" class="input-field" placeholder="年限">
+                </div>
+                <div class="info-item">
+                    <span class="info-label">政治面貌：</span>
+                    <input type="text" class="input-field" placeholder="政治面貌">
+                </div>
+                <div class="info-item">
+                    <span class="info-label">婚姻状况：</span>
+                    <input type="text" class="input-field" placeholder="婚姻状况">
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">工作经历</div>
+            <div class="item">
+                <div class="item-header">
+                    <div>
+                        <input type="text" class="input-field" placeholder="公司名称" style="font-weight: bold; width: 140px; font-size: 12px;">
+                        <input type="text" class="input-field" placeholder="职位" style="color: #667eea; width: 100px; font-size: 11px;">
+                    </div>
+                    <input type="text" class="input-field" placeholder="时间" style="width: 110px; font-size: 11px;">
+                </div>
+                <textarea class="textarea-field" placeholder="工作内容..." style="min-height: 30px;"></textarea>
+            </div>
+            <div class="item">
+                <div class="item-header">
+                    <div>
+                        <input type="text" class="input-field" placeholder="公司名称" style="font-weight: bold; width: 140px; font-size: 12px;">
+                        <input type="text" class="input-field" placeholder="职位" style="color: #667eea; width: 100px; font-size: 11px;">
+                    </div>
+                    <input type="text" class="input-field" placeholder="时间" style="width: 110px; font-size: 11px;">
+                </div>
+                <textarea class="textarea-field" placeholder="工作内容..." style="min-height: 30px;"></textarea>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">项目经验</div>
+            <div class="item">
+                <div class="item-header">
+                    <input type="text" class="input-field" placeholder="项目名称" style="font-weight: bold; flex: 1; font-size: 12px;">
+                    <input type="text" class="input-field" placeholder="时间" style="width: 110px; font-size: 11px;">
+                </div>
+                <input type="text" class="input-field" placeholder="技术栈" style="color: #667eea; margin-bottom: 3px; font-size: 11px;">
+                <textarea class="textarea-field" placeholder="项目描述..." style="min-height: 30px;"></textarea>
+            </div>
+            <div class="item">
+                <div class="item-header">
+                    <input type="text" class="input-field" placeholder="项目名称" style="font-weight: bold; flex: 1; font-size: 12px;">
+                    <input type="text" class="input-field" placeholder="时间" style="width: 110px; font-size: 11px;">
+                </div>
+                <input type="text" class="input-field" placeholder="技术栈" style="color: #667eea; margin-bottom: 3px; font-size: 11px;">
+                <textarea class="textarea-field" placeholder="项目描述..." style="min-height: 30px;"></textarea>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">教育背景</div>
+            <div class="item">
+                <div class="item-header">
+                    <input type="text" class="input-field" placeholder="学校名称" style="font-weight: bold; width: 140px; font-size: 12px;">
+                    <input type="text" class="input-field" placeholder="专业" style="color: #667eea; width: 100px; font-size: 11px;">
+                    <input type="text" class="input-field" placeholder="学历" style="width: 60px; font-size: 11px;">
+                    <input type="text" class="input-field" placeholder="时间" style="width: 110px; font-size: 11px;">
+                </div>
+            </div>
+            <div class="item">
+                <div class="item-header">
+                    <input type="text" class="input-field" placeholder="学校名称" style="font-weight: bold; width: 140px; font-size: 12px;">
+                    <input type="text" class="input-field" placeholder="专业" style="color: #667eea; width: 100px; font-size: 11px;">
+                    <input type="text" class="input-field" placeholder="学历" style="width: 60px; font-size: 11px;">
+                    <input type="text" class="input-field" placeholder="时间" style="width: 110px; font-size: 11px;">
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">专业技能</div>
+            <div class="skills-grid">
+                <div class="skill-item"><input type="text" class="input-field" placeholder="技能1" style="border: none; text-align: center;"></div>
+                <div class="skill-item"><input type="text" class="input-field" placeholder="技能2" style="border: none; text-align: center;"></div>
+                <div class="skill-item"><input type="text" class="input-field" placeholder="技能3" style="border: none; text-align: center;"></div>
+                <div class="skill-item"><input type="text" class="input-field" placeholder="技能4" style="border: none; text-align: center;"></div>
+                <div class="skill-item"><input type="text" class="input-field" placeholder="技能5" style="border: none; text-align: center;"></div>
+                <div class="skill-item"><input type="text" class="input-field" placeholder="技能6" style="border: none; text-align: center;"></div>
+                <div class="skill-item"><input type="text" class="input-field" placeholder="技能7" style="border: none; text-align: center;"></div>
+                <div class="skill-item"><input type="text" class="input-field" placeholder="技能8" style="border: none; text-align: center;"></div>
+                <div class="skill-item"><input type="text" class="input-field" placeholder="技能9" style="border: none; text-align: center;"></div>
+                <div class="skill-item"><input type="text" class="input-field" placeholder="技能10" style="border: none; text-align: center;"></div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">自我评价</div>
+            <textarea class="textarea-field" placeholder="自我评价..." style="min-height: 50px;"></textarea>
+        </div>
+    </div>
+
+    <script>
+        // 自动保存功能
+        let saveTimeout;
+        document.querySelectorAll('input, textarea').forEach(input => {
+            input.addEventListener('input', function() {
+                clearTimeout(saveTimeout);
+                saveTimeout = setTimeout(function() {
+                    const inputs = document.querySelectorAll('input, textarea');
+                    const data = {};
+                    inputs.forEach((input, index) => {
+                        data[index] = input.value;
+                    });
+                    localStorage.setItem('resumeData', JSON.stringify(data));
+                }, 100);
+            });
+        });
+
+        // 页面加载时自动加载数据
+        window.addEventListener('load', function() {
+            const data = localStorage.getItem('resumeData');
+            if (data) {
+                const parsedData = JSON.parse(data);
+                const inputs = document.querySelectorAll('input, textarea');
+                inputs.forEach((input, index) => {
+                    if (parsedData[index]) {
+                        input.value = parsedData[index];
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>
